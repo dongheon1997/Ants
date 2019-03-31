@@ -36,61 +36,168 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 
 bool key[256] = { 0 };
 
-bool block[11][15] = {
+int mapwidth = 11 * 50;
+int maphight = 15 * 50;
+
+int block[11][15] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+	1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1,
+	1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1,
 	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
 	1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
 
 int getLeftX(int x1, int x2, int y1, int y2)
 {
+	y1 /= 50;
+	if (y2 % 50)
+	{
+		y2 /= 50;
+	}
+	else
+	{
+		y2 /= 50;
+		y2 -= 1;
+	}
+
+	//
+
+	x1 /= 50;
+	x1 -= 1;
+
+	x2 /= 50;
+	x2 -= 1;
+
+	for (int i = y1; i <= y2; i += 1)
+	{
+		for (int j = x1; j > x2; j -= 1)
+		{
+			if (block[i][j] == true) return j * 50 + 50;
+		}
+	}
+
+	return INT_MIN;
 }
 
 int getRightX(int x1, int x2, int y1, int y2)
 {
+	y1 /= 50;
+	if (y2 % 50)
+	{
+		y2 /= 50;
+	}
+	else
+	{
+		y2 /= 50;
+		y2 -= 1;
+	}
+
+	//
+
+	if (x1 % 50)
+	{
+		x1 /= 50;
+		x1 += 1;
+	}
+	else
+	{
+		x1 /= 50;
+	}
+
+	if (x2 % 50)
+	{
+		x2 /= 50;
+		x2 += 1;
+	}
+	else
+	{
+		x2 /= 50;
+	}
+
+	for (int i = y1; i <= y2; i += 1)
+	{
+		for (int j = x1; j < x2; j += 1)
+		{
+			if (block[i][j] == true) return j * 50;
+		}
+	}
+
+	return INT_MIN;
+}
+
+int getUpY(int x1, int x2, int y1, int y2)
+{
+	x1 /= 50;
+	if (x2 % 50)
+	{
+		x2 /= 50;
+	}
+	else
+	{
+		x2 /= 50;
+		x2 -= 1;
+	}
+
+	// x1 ~ x2 (x1 = x2 일 수 있음)
+
+	y1 /= 50;
+	y1 -= 1;
+
+	y2 /= 50;
+	y2 -= 1;
+
+	// y1 ~ y2 (y1 = y2 일 수 있음)
+
+	for (int i = y1; i > y2; i -= 1)
+	{
+		for (int j = x1; j <= x2; j += 1)
+		{
+			if (block[i][j] == true) return i * 50 + 50;
+		}
+	}
+
+	return INT_MIN;
 }
 
 int getDownY(int x1, int x2, int y1, int y2)
 {
 	x1 /= 50;
-	if (x2 % 50 == 0)
+	if (x2 % 50)
+	{
+		x2 /= 50;
+	}
+	else
 	{
 		x2 /= 50;
 		x2 -= 1;
 	}
-	else
-	{
-		x2 /= 50;
-	}
 
 	// x1 ~ x2 (x1 = x2 일 수 있음)
 
-	if (y1 % 50 == 0)
-	{
-		y1 /= 50;
-	}
-	else
+	if (y1 % 50)
 	{
 		y1 /= 50;
 		y1 += 1;
 	}
+	else
+	{
+		y1 /= 50;
+	}
 
-	if (y2 % 50 == 0)
+	if (y2 % 50)
 	{
 		y2 /= 50;
+		y2 += 1;
 	}
 	else
 	{
 		y2 /= 50;
-		y2 += 1;
 	}
 
 	// y1 ~ y2 (y1 = y2 일 수 있음)
@@ -103,36 +210,82 @@ int getDownY(int x1, int x2, int y1, int y2)
 		}
 	}
 
-	return 0;
+	return INT_MIN;
 }
 
 static int x = 75;
 static int y = 75;
 static int ay = 0;
 static int speed = 5;
-static int width = 5;
+static int width = 20;
 static int hight = 20;
 static bool isJump = true;
 
 void CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 {
-	if (key[VK_LEFT]) x -= speed;
-	if (key[VK_RIGHT]) x += speed;
+	int go;
+
+	if (key[VK_LEFT])
+	{
+		go = getLeftX(x, x - speed, y, y + hight);
+		if (go == INT_MIN)
+		{
+			x -= speed;
+		}
+		else
+		{
+			x = go;
+		}
+	}
+	if (key[VK_RIGHT])
+	{
+		go = getRightX(x + width, x + width + speed, y, y + hight);
+		if (go == INT_MIN)
+		{
+			x += speed;
+		}
+		else
+		{
+			x = go - width;
+		}
+	}
 
 	if (key[VK_UP] && !isJump)
 	{
 		ay -= 20;
-		isJump = true;
 	}
-
-	y += ay;
 	ay += 2;
-
-	if (y >= 500)
+	
+	if (ay >= 0)
 	{
-		y = 500;
-		isJump = false;
-		ay = 0;
+		go = getDownY(x, x + width, y + hight, y + hight + ay);
+
+		if (go == INT_MIN)
+		{
+			y += ay;
+			isJump = true;
+		}
+		else
+		{
+			y = go - hight;
+			ay = 0;
+			isJump = false;
+		}
+	}
+	else
+	{
+		go = getUpY(x, x + width, y, y + ay);
+		if (go == INT_MIN)
+		{
+			y += ay;
+			isJump = true;
+		}
+		else
+		{
+			y = go;
+			ay = 0;
+			isJump = true;
+		}
 	}
 
 	InvalidateRect(hWnd, NULL, TRUE);
@@ -163,7 +316,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				if (block[i][j]) Rectangle(hdc, j * 50, i * 50, j * 50 + 50, i * 50 + 50);
 			}
 		}
-		TextOut(hdc, x, y, "A", 1);
+		TextOut(hdc, x, y, "##", 2);
 		
 		EndPaint(hWnd, &ps);
 		return 0;
