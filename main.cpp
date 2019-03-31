@@ -36,21 +36,21 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 
 bool key[256] = { 0 };
 
-int mapwidth = 11 * 50;
-int maphight = 15 * 50;
+int mapwidth = 20 * 50;
+int maphight = 11 * 20;
 
-int block[11][15] = {
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1,
-	1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1,
-	1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
-	1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+int block[11][20] = {
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+	1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+	1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1,
+	1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+	1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+	1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+	1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
 int getLeftX(int x1, int x2, int y1, int y2)
@@ -216,9 +216,9 @@ int getDownY(int x1, int x2, int y1, int y2)
 static int x = 75;
 static int y = 75;
 static int ay = 0;
-static int speed = 5;
-static int width = 20;
-static int hight = 20;
+static int speed = 6;
+static int width = 30;
+static int hight = 30;
 static bool isJump = true;
 
 void CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
@@ -252,7 +252,7 @@ void CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 
 	if (key[VK_UP] && !isJump)
 	{
-		ay -= 20;
+		ay -= speed * 5;
 	}
 	ay += 2;
 	
@@ -298,7 +298,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	switch (iMessage)
 	{
 	case WM_CREATE:
-		SetTimer(hWnd, 1, 10, (TIMERPROC)TimerProc);
+		SetTimer(hWnd, 1, 20, (TIMERPROC)TimerProc);
 		return 0;
 	case WM_KEYDOWN:
 		key[wParam] = true;
@@ -309,14 +309,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
 
+		static int xx;
+		static int yy;
+
+		xx = 400 - x;
+		yy = 300 - y;
+
+		static int X;
+		static int Y;
+
+		X += (xx - X) * 0.2;
+		Y += (yy - Y) * 0.2;
+
 		for (int i = 0; i < 11; i += 1)
 		{
-			for (int j = 0; j < 15; j += 1)
+			for (int j = 0; j < 20; j += 1)
 			{
-				if (block[i][j]) Rectangle(hdc, j * 50, i * 50, j * 50 + 50, i * 50 + 50);
+				if (block[i][j]) Rectangle(hdc, j * 50 + X, i * 50 + Y, j * 50 + 50 + X, i * 50 + 50 + Y);
 			}
 		}
-		TextOut(hdc, x, y, "##", 2);
+		
+		Rectangle(hdc, x + X, y + Y, x + width + X, y + hight + Y);
 		
 		EndPaint(hWnd, &ps);
 		return 0;
