@@ -2,7 +2,7 @@
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 HINSTANCE g_hInst;
-LPSTR lpszClass = LPSTR("이게 이름인가");
+LPSTR lpszClass = LPSTR("Ants");
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -74,15 +74,17 @@ int getLeftX(int x1, int x2, int y1, int y2)
 	x2 /= 50;
 	x2 -= 1;
 
+	int max = INT_MIN;
 	for (int i = y1; i <= y2; i += 1)
 	{
 		for (int j = x1; j > x2; j -= 1)
 		{
-			if (block[i][j] == true) return j * 50 + 50;
+			if (j < 0) continue;
+			if (block[i][j] == true) if (max < j * 50 + 50) max = j * 50 + 50;
 		}
 	}
 
-	return INT_MIN;
+	return max;
 }
 
 int getRightX(int x1, int x2, int y1, int y2)
@@ -120,15 +122,18 @@ int getRightX(int x1, int x2, int y1, int y2)
 		x2 /= 50;
 	}
 
+	int min = INT_MAX;
 	for (int i = y1; i <= y2; i += 1)
 	{
 		for (int j = x1; j < x2; j += 1)
 		{
-			if (block[i][j] == true) return j * 50;
+			if (j > 10) continue;
+			if (block[i][j] == true) if (min > j * 50) min = j * 50;
 		}
 	}
 
-	return INT_MIN;
+	if (min == INT_MAX) return INT_MIN;
+	return min;
 }
 
 int getUpY(int x1, int x2, int y1, int y2)
@@ -255,7 +260,7 @@ void CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
 		ay -= speed * 5;
 	}
 	ay += 2;
-	
+
 	if (ay >= 0)
 	{
 		go = getDownY(x, x + width, y + hight, y + hight + ay);
@@ -328,9 +333,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 				if (block[i][j]) Rectangle(hdc, j * 50 + X, i * 50 + Y, j * 50 + 50 + X, i * 50 + 50 + Y);
 			}
 		}
-		
+
 		Rectangle(hdc, x + X, y + Y, x + width + X, y + hight + Y);
-		
+
 		EndPaint(hWnd, &ps);
 		return 0;
 	case WM_DESTROY:
