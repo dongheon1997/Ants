@@ -127,7 +127,7 @@ int getRightX(int x1, int x2, int y1, int y2)
 	{
 		for (int j = x1; j < x2; j += 1)
 		{
-			if (j > 10) continue;
+			if (j > 19) continue;
 			if (block[i][j] == true) if (min > j * 50) min = j * 50;
 		}
 	}
